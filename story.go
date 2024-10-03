@@ -18,16 +18,15 @@ type Option struct {
 	Arc  string `json:"arc"`
 }
 
-
 func JsonStory(r io.Reader) (Story, error) {
-  d := json.NewDecoder(r)
-  var story Story
-  err := d.Decode(&story)
+	d := json.NewDecoder(r)
+	var story Story
+	err := d.Decode(&story)
 
-  if err != nil {
-    return nil, err
-  } else {
-    return story, nil
-  }
+	if err != nil {
+		return nil, err
+	} else {
+		return story, nil
+	}
 
 }
