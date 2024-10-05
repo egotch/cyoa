@@ -18,12 +18,14 @@ func main() {
 
 	flag.Parse()
 
+  // open the json file and read it in
 	fmt.Printf("\nUsing story file - %s\n", *filePtr)
 	file, err := os.Open(*filePtr)
 	if err != nil {
 		panic(err)
 	}
 
+  // parse the json file >> story struct
 	story, err := cyoa.JsonStory(file)
 
   h := cyoa.NewHandler(story)
