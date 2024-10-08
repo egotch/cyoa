@@ -4,24 +4,26 @@ package cyoa
 
 import (
 	"html/template"
+	"log"
 	"net/http"
+	"strings"
 )
 
 var tpl *template.Template
 
 type handler struct {
-  s Story
+    s Story
 }
 
 // init - initialize the template var tpl using the specified html template string
 func init() {
-  tpl = template.Must(template.New("").Parse(DefaultHandlerTmplt))
+    tpl = template.Must(template.New("").Parse(DefaultHandlerTmplt))
 }
 
 
 // NewHandler: returns a http.Handler
 func NewHandler(s Story) http.Handler {
-  return handler{s}
+    return handler{s}
 }
 
 
@@ -30,8 +32,25 @@ func NewHandler(s Story) http.Handler {
 // if template fails to be rendered, panics with respective err code
 // template is hard coded via the init function
 func (h handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-  err := tpl.Execute(w, h.s["intro"])
-  if err != nil {
-    panic(err)
-  }
+    path := strings.TrimSpace(r.URL.Path)
+    if path == "" || path == "/" {
+        path = "/intro"
+    }
+
+    // "/intro" => "intro"
+    path = path[1:]
+
+    // Check if chapter is present in the stories
+    // if it is, render the template
+    // if it is not, report not found error
+    if chapter, ok := h.s[path]; ok {
+        err := tpl.Execute(w, chapter)
+        if err != nil {
+            log.Printf("%v", err)
+            http.Error(w, "Ruh Roh ...", http.StatusInternalServerError)
+        }
+        return
+    }
+    http.Error(w, "Chapter not found", http.StatusNotFound)
+
 }
