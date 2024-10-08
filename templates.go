@@ -1,7 +1,6 @@
 // houses html, json, and other templates for use in project
 package cyoa
 
-
 var DefaultHandlerTmplt string = `
 <!DOCTYPE html>
 <html>
